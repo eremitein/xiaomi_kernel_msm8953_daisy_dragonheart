@@ -325,8 +325,8 @@ static const struct file_operations fts_proc_fops = {
 ***********************************************************************/
 int fts_create_apk_debug_channel(struct i2c_client *client)
 {
-	fts_proc_entry = proc_create(PROC_NAME, 0644, NULL, &fts_proc_fops);
-	if (fts_proc_entry == NULL) {
+	fts_proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_fops);
+	if (NULL == fts_proc_entry) {
 		FTS_ERROR("Couldn't create proc entry!");
 		return -ENOMEM;
 	}
@@ -601,24 +601,24 @@ static ssize_t fts_tprwreg_store(struct device *dev,
 	retval = kstrtoul(valbuf, 16, &wmreg);
 	fts_str_to_bytes((char *)buf, num_read_chars, valbuf, &retval);
 
-	if (retval == 1) {
+	if (1 == retval) {
 		regaddr = valbuf[0];
 		retval = 0;
-	} else if (retval == 2) {
+	} else if (2 == retval) {
 		regaddr = valbuf[0];
 		regvalue = valbuf[1];
 		retval = 0;
 	} else
 		retval = -1;
 
-	if (retval != 0) {
+	if (0 != retval) {
 		FTS_ERROR("ERROR: Can't convert to number %s", buf);
 		goto error_return;
 	}
 #if FTS_ESDCHECK_EN
 	fts_esdcheck_proc_busy(1);
 #endif
-	if (num_read_chars == 2) {
+	if (2 == num_read_chars) {
 		g_rwreg_result.op = 0;
 		g_rwreg_result.reg = regaddr;
 		/*read register*/
@@ -1045,13 +1045,13 @@ static ssize_t fts_dumpreg_show(struct device *dev,
 /* get the fw version
 *   example:cat fw_version
 */
-static DEVICE_ATTR(fts_fw_version, 0644,
+static DEVICE_ATTR(fts_fw_version, S_IRUGO|S_IWUSR,
 		fts_tpfwver_show, fts_tpfwver_store);
 
 /* upgrade from *.i
 *   example: echo 1 > fw_update
 */
-static DEVICE_ATTR(fts_fw_update, 0644,
+static DEVICE_ATTR(fts_fw_update, S_IRUGO|S_IWUSR,
 		fts_fwupdate_show, fts_fwupdate_store);
 
 /* read and write register
@@ -1061,29 +1061,29 @@ static DEVICE_ATTR(fts_fw_update, 0644,
 *   note:the number of input must be 2 or 4.if it not enough,
 *	 please fill in the 0.
 */
-static DEVICE_ATTR(fts_rw_reg, 0644,
+static DEVICE_ATTR(fts_rw_reg, S_IRUGO|S_IWUSR,
 		fts_tprwreg_show, fts_tprwreg_store);
 
 /*  upgrade from app.bin
 *	example:echo "*_app.bin" > upgrade_app
 */
-static DEVICE_ATTR(fts_upgrade_app, 0644,
+static DEVICE_ATTR(fts_upgrade_app, S_IRUGO|S_IWUSR,
 		fts_fwupgradeapp_show, fts_fwupgradeapp_store);
-static DEVICE_ATTR(fts_driver_version, 0644,
+static DEVICE_ATTR(fts_driver_version, S_IRUGO|S_IWUSR,
 		fts_driverversion_show, fts_driverversion_store);
-static DEVICE_ATTR(fts_dump_reg, 0644,
+static DEVICE_ATTR(fts_dump_reg, S_IRUGO|S_IWUSR,
 		fts_dumpreg_show, fts_dumpreg_store);
-static DEVICE_ATTR(fts_show_log, 0644,
+static DEVICE_ATTR(fts_show_log, S_IRUGO|S_IWUSR,
 		fts_show_log_show, fts_show_log_store);
-static DEVICE_ATTR(fts_module_config, 0644,
+static DEVICE_ATTR(fts_module_config, S_IRUGO|S_IWUSR,
 		fts_module_config_show, fts_module_config_store);
-static DEVICE_ATTR(fts_hw_reset, 0644,
+static DEVICE_ATTR(fts_hw_reset, S_IRUGO|S_IWUSR,
 		fts_hw_reset_show, fts_hw_reset_store);
-static DEVICE_ATTR(fts_irq, 0644,
+static DEVICE_ATTR(fts_irq, S_IRUGO|S_IWUSR,
 		fts_irq_show, fts_irq_store);
 
 #if FTS_ESDCHECK_EN
-static DEVICE_ATTR(fts_esd_check, 0644,
+static DEVICE_ATTR(fts_esd_check, S_IRUGO|S_IWUSR,
 		fts_esdcheck_show, fts_esdcheck_store);
 #endif
 
@@ -1121,7 +1121,7 @@ int fts_create_sysfs(struct i2c_client *client)
 	int err;
 
 	err = sysfs_create_group(&client->dev.kobj, &fts_attribute_group);
-	if (err != 0) {
+	if (0 != err) {
 		FTS_ERROR("[EX]: sysfs_create_group() failed!!");
 		sysfs_remove_group(&client->dev.kobj, &fts_attribute_group);
 		return -EIO;

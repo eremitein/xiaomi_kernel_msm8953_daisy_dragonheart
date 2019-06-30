@@ -34,6 +34,7 @@
 *****************************************************************************/
 #include "../focaltech_core.h"
 #include "../focaltech_flash.h"
+#include <linux/wakelock.h>
 #include <linux/timer.h>
 
 /*****************************************************************************
@@ -86,8 +87,7 @@ static int fts_ctpm_auto_upgrade_pingpong(struct i2c_client *client)
 		} else {
 			/* upgrade fail */
 			/* if upgrade fail, reset to run ROM.
-			 * if app in flash is ok. TP will work success
-			 */
+			 * if app in flash is ok. TP will work success */
 			FTS_INFO("[UPGRADE]: upgrade fail, reset now!!");
 			fts_ctpm_rom_or_pram_reset(client);
 		}

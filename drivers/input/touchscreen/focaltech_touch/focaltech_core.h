@@ -17,7 +17,7 @@
 /*****************************************************************************
 *
 * File Name: focaltech_core.h
-*
+
 * Author: Focaltech Driver Team
 *
 * Created: 2016-08-08
@@ -97,10 +97,10 @@
 #define FTS_TOUCH_UP        1
 #define FTS_TOUCH_CONTACT   2
 
-#define FTS_SYSFS_ECHO_ON(buf)      ((strncasecmp(buf, "1", 1)  == 0) || \
-					(strncasecmp(buf, "on", 2) == 0))
-#define FTS_SYSFS_ECHO_OFF(buf)     ((strncasecmp(buf, "0", 1)  == 0) || \
-					(strncasecmp(buf, "off", 3) == 0))
+#define FTS_SYSFS_ECHO_ON(buf)      ((strnicmp(buf, "1", 1)  == 0) || \
+					(strnicmp(buf, "on", 2) == 0))
+#define FTS_SYSFS_ECHO_OFF(buf)     ((strnicmp(buf, "0", 1)  == 0) || \
+					(strnicmp(buf, "off", 3) == 0))
 
 /*****************************************************************************
 * Private enumerations, structures and unions using typedef
@@ -130,10 +130,9 @@ struct ts_event {
 	u16 au16_y[FTS_MAX_POINTS]; /*y coordinate */
 	u16 pressure[FTS_MAX_POINTS];
 	u8 au8_touch_event[FTS_MAX_POINTS]; /* touch event:
-					     * 0 -- down;
-					     * 1 -- up;
-					     * 2 -- contact
-					     */
+					       0 -- down;
+					       1-- up;
+					       2 -- contact */
 	u8 au8_finger_id[FTS_MAX_POINTS];   /* touch ID */
 	u8 area[FTS_MAX_POINTS];
 	u8 touch_point;

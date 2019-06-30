@@ -116,57 +116,29 @@ static ssize_t fts_gesture_buf_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
 
 /* sysfs gesture node
- *   read example: cat  wakeup_gesture        ---read gesture mode
- *   write example:echo 01 > wakeup_gesture   ---write gesture mode to 01
+ *   read example: cat  fts_gesture_mode        ---read gesture mode
+ *   write example:echo 01 > fts_gesture_mode   ---write gesture mode to 01
  *
  */
-static DEVICE_ATTR(wakeup_gesture, 0644,
+static DEVICE_ATTR(fts_gesture_mode, S_IRUGO|S_IWUSR,
 		fts_gesture_show, fts_gesture_store);
 /*
  *   read example: cat fts_gesture_buf        ---read gesture buf
  */
-static DEVICE_ATTR(wakeup_gesture_buf, 0644,
+static DEVICE_ATTR(fts_gesture_buf, S_IRUGO|S_IWUSR,
 		fts_gesture_buf_show, fts_gesture_buf_store);
-static struct attribute *wakeup_gesture_attrs[] = {
+static struct attribute *fts_gesture_mode_attrs[] = {
 
 
-	&dev_attr_wakeup_gesture.attr,
-	&dev_attr_wakeup_gesture_buf.attr,
+	&dev_attr_fts_gesture_mode.attr,
+	&dev_attr_fts_gesture_buf.attr,
 	NULL,
 };
 
 static struct attribute_group fts_gesture_group = {
 
-	.attrs = wakeup_gesture_attrs,
+	.attrs = fts_gesture_mode_attrs,
 };
-
-/************************************************************************
-* Name: fts_input_symlink
-*  Brief:
-*  Input:
-* Output:
-* Return: 0-success or others-error
-***********************************************************************/
-static ssize_t fts_input_symlink(struct i2c_client *client)
-{
-	char *driver_path;
-	int ret = 0;
-
- 	driver_path = kzalloc(PATH_MAX, GFP_KERNEL);
-	if (!driver_path) {
-		return -ENOMEM;
-	}
-
- 	sprintf(driver_path, "/sys%s",
-			kobject_get_path(&client->dev.kobj, GFP_KERNEL));
-
- 	pr_info("%s: driver_path=%s\n", __func__, driver_path);
-	proc_symlink("touchpanel", NULL, driver_path);
-
- 	kfree(driver_path);
-
- 	return ret;
-}
 
 /************************************************************************
 * Name: fts_gesture_show
@@ -207,10 +179,10 @@ static ssize_t fts_gesture_store(struct device *dev,
 
 	if (FTS_SYSFS_ECHO_ON(buf)) {
 		FTS_INFO("[GESTURE]enable gesture");
-		fts_gesture_data.mode = 1;
+		fts_gesture_data.mode = ENABLE;
 	} else if (FTS_SYSFS_ECHO_OFF(buf)) {
 		FTS_INFO("[GESTURE]disable gesture");
-		fts_gesture_data.mode = 0;
+		fts_gesture_data.mode = DISABLE;
 	}
 
 	mutex_unlock(&fts_input_dev->mutex);
@@ -312,7 +284,7 @@ static void fts_gesture_report(struct input_dev *input_dev, int gesture_id)
 		gesture = KEY_GESTURE_DOWN;
 		break;
 	case GESTURE_DOUBLECLICK:
-		gesture = KEY_POWER;
+		gesture = KEY_GESTURE_U;
 		break;
 	case GESTURE_O:
 		gesture = KEY_GESTURE_O;
@@ -653,8 +625,7 @@ int fts_gesture_init(struct input_dev *input_dev, struct i2c_client *client)
 	__set_bit(KEY_GESTURE_Z, input_dev->keybit);
 
 	fts_create_gesture_sysfs(client);
-	fts_input_symlink(client);
-	fts_gesture_data.mode = 0;
+	fts_gesture_data.mode = 1;
 	fts_gesture_data.active = 0;
 	FTS_FUNC_EXIT();
 

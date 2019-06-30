@@ -65,7 +65,7 @@ struct input_dev *fts_input_dev;
 #if FTS_DEBUG_EN
 int g_show_log = 1;
 #else
-int g_show_log;
+int g_show_log = 0;
 #endif
 
 #if (FTS_DEBUG_EN && (FTS_DEBUG_LEVEL == 2))
@@ -514,11 +514,11 @@ static int fts_input_dev_report_b(struct ts_event *event,
 #endif
 		} else {
 			uppoint++;
+			input_mt_report_slot_state(data->input_dev,
+						MT_TOOL_FINGER, false);
 #if FTS_REPORT_PRESSURE_EN
 			input_report_abs(data->input_dev, ABS_MT_PRESSURE, 0);
 #endif
-			input_mt_report_slot_state(data->input_dev,
-						MT_TOOL_FINGER, false);
 			data->touchs &= ~BIT(event->au8_finger_id[i]);
 			FTS_DEBUG("[B]P%d UP!", event->au8_finger_id[i]);
 		}
@@ -729,10 +729,10 @@ static int fts_read_touchdata(struct fts_ts_data *data)
 		event->pressure[i] =
 			(s16) buf[FTS_TOUCH_PRE_POS + FTS_ONE_TCH_LEN * i];
 
-		if (event->area[i] == 0)
+		if (0 == event->area[i])
 			event->area[i] = 0x09;
 
-		if (event->pressure[i] == 0)
+		if (0 == event->pressure[i])
 			event->pressure[i] = 0x3f;
 
 		if ((event->au8_touch_event[i] == 0 ||
@@ -764,7 +764,7 @@ static void fts_report_value(struct fts_ts_data *data)
 	FTS_DEBUG("point number: %d, touch point: %d", event->point_num,
 			  event->touch_point);
 
-	if (fts_input_dev_report_key_event(event, data) == 0)
+	if (0 == fts_input_dev_report_key_event(event, data))
 		return;
 
 #if FTS_MT_PROTOCOL_B_EN
@@ -1421,7 +1421,7 @@ static const struct i2c_device_id fts_ts_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, fts_ts_id);
 
-static const struct of_device_id fts_match_table[] = {
+static struct of_device_id fts_match_table[] = {
 	{ .compatible = "focaltech,fts", },
 	{ },
 };

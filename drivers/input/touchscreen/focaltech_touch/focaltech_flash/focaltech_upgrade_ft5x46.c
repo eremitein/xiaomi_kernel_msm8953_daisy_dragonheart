@@ -194,9 +194,9 @@ static int fts_ft5x46_get_i_file(struct i2c_client *client, int fw_valid)
 	}
 #else
 	/* (FTS_GET_VENDOR_ID_NUM == 0) */
-	/* g_fw_file = CTPM_FW;
+	g_fw_file = CTPM_FW;
 	g_fw_len = fts_getsize(FW_SIZE);
-	FTS_DEBUG("[UPGRADE]FW FILE:CTPM_FW, SIZE:%x", g_fw_len); */
+	FTS_DEBUG("[UPGRADE]FW FILE:CTPM_FW, SIZE:%x", g_fw_len);
 #endif
 
 	return ret;
@@ -408,7 +408,7 @@ static int fts_ft5x46_upgrade_use_buf(struct i2c_client *client,
 		auc_i2c_write_buf[0] = 0x6a;
 		reg_val[0] = reg_val[1] = 0x00;
 		fts_i2c_read(client, auc_i2c_write_buf, 1, reg_val, 2);
-		if ((reg_val[0] == 0xF0) && (reg_val[1] == 0xAA))
+		if ((0xF0 == reg_val[0]) && (0xAA == reg_val[1]))
 			break;
 		msleep(50);
 	}
@@ -516,7 +516,7 @@ static int fts_ft5x46_upgrade_use_buf(struct i2c_client *client,
 		fts_i2c_read(client, auc_i2c_write_buf, 1, reg_val, 2);
 		FTS_DEBUG("[UPGRADE]: reg_val[0]=%02x reg_val[0]=%02x!!",
 					reg_val[0], reg_val[1]);
-		if ((reg_val[0] == 0xF0) && (reg_val[1] == 0x55))
+		if ((0xF0 == reg_val[0]) && (0x55 == reg_val[1]))
 			break;
 		usleep_range(1000, 2000);
 	}

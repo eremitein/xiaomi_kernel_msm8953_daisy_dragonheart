@@ -352,8 +352,7 @@ static int fts_ft6x36gu_upgrade_use_buf(struct i2c_client *client,
 	FTS_FUNC_ENTER();
 
 	/*if the first byte of app is not 0x02,
-	 *the app is invaild, can not upgrade
-	 */
+	 *the app is invaild, can not upgrade*/
 	if (pbt_buf[0] != 0x02) {
 		FTS_ERROR("[UPGRADE]: app first byte != 0x02. cannot upgrade!");
 		return -EINVAL;

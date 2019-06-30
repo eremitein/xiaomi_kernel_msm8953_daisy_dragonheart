@@ -51,16 +51,14 @@
 *****************************************************************************/
 struct fts_esdcheck_st {
 	u8  active              : 1;    /* 1- esd check active, need check esd
-					 * 0- no esd check
-					 */
+					   0- no esd check */
 	u8  suspend             : 1;
 	u8  proc_debug          : 1;    /* apk or adb is accessing I2C */
 	u8  intr                : 1;    /* 1- Interrupt trigger */
 	u8  unused              : 4;
 	u8  flow_work_hold_cnt;		/* Flow Work Cnt(reg0x91)
-					 * keep a same value for x times.
-					 * >=5 times is ESD, need reset
-					 */
+					   keep a same value for x times.
+					   >=5 times is ESD, need reset */
 	u8  flow_work_cnt_last;       /* Save Flow Work Cnt(reg0x91) value */
 	u32 hardware_reset_cnt;
 	u32 i2c_nack_cnt;
@@ -222,8 +220,7 @@ static bool get_flow_cnt(void)
 	}
 
 	/* if read flow work cnt 5 times and the value are all the same,
-	 * then need hardware_reset.
-	 */
+	 * then need hardware_reset */
 	if (fts_esdcheck_data.flow_work_hold_cnt >= 5) {
 		FTS_DEBUG("[ESD]: Flow Work Cnt, need execute TP reset!!");
 		return 1;
@@ -265,8 +262,7 @@ static int esdcheck_algorithm(void)
 	}
 
 	/* 3. check fts_esdcheck_data.proc_debug state,
-	 *	if 1-proc busy, no need check esd
-	 */
+	 *	if 1-proc busy, no need check esd*/
 	if (fts_esdcheck_data.proc_debug == 1) {
 		FTS_INFO("[ESD]: In cmd mode, not check esd, return!!");
 		return 0;
@@ -291,8 +287,7 @@ static int esdcheck_algorithm(void)
 	hardware_reset = get_chip_id();
 
 	/* 7. get Flow work cnt: 0x91 If no change for 5 times,
-	 *	then ESD and reset
-	 */
+	 *	then ESD and reset */
 	if (!hardware_reset)
 		hardware_reset = get_flow_cnt();
 

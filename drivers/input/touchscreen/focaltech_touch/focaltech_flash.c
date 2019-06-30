@@ -122,7 +122,7 @@ int fts_ctpm_i2c_hid2std(struct i2c_client *client)
 	buf[0] = buf[1] = buf[2] = 0;
 	fts_i2c_read(client, buf, 0, buf, 3);
 
-	if ((buf[0] == 0xeb) && (buf[1] == 0xaa) && (buf[2] == 0x08)) {
+	if ((0xeb == buf[0]) && (0xaa == buf[1]) && (0x08 == buf[2])) {
 		FTS_DEBUG("hidi2c change to stdi2c successful!!");
 		bRet = 1;
 	} else {
@@ -223,15 +223,15 @@ int fts_ctpm_auto_clb(struct i2c_client *client)
 		/* 5x36,5x36i */
 		for (i = 0; i < 100; i++) {
 			fts_i2c_read_reg(client, 0x02, &uc_temp);
-			if ((uc_temp == 0x02) ||
-				(uc_temp == 0xFF))
+			if (0x02 == uc_temp ||
+				0xFF == uc_temp)
 				break;
 			msleep(20);
 		}
 	} else {
 		for (i = 0; i < 100; i++) {
 			fts_i2c_read_reg(client, 0, &uc_temp);
-			if (((uc_temp&0x70)>>4) == 0x0)
+			if (0x0 == ((uc_temp&0x70)>>4))
 				break;
 			msleep(20);
 		}
@@ -450,8 +450,7 @@ static int fts_ctpm_check_fw_status(struct i2c_client *client)
 		return -EIO;
 
 	/* I2C communication ok, but not get correct ID,
-	 * need check pram/rom/bootloader
-	 */
+	 * need check pram/rom/bootloader */
 	if (i >= 5)
 		fw_status = fts_ctpm_get_pram_or_rom_id(client);
 

@@ -421,7 +421,7 @@ static int fts_ft5822_upgrade_use_buf(struct i2c_client *client,
 		auc_i2c_write_buf[0] = 0x6a;
 		reg_val[0] = reg_val[1] = 0x00;
 		fts_i2c_read(client, auc_i2c_write_buf, 1, reg_val, 2);
-		if ((reg_val[0] == 0xF0) && (reg_val[1] == 0xAA))
+		if ((0xF0 == reg_val[0]) && (0xAA == reg_val[1]))
 			break;
 		msleep(50);
 	}
@@ -530,7 +530,7 @@ static int fts_ft5822_upgrade_use_buf(struct i2c_client *client,
 		fts_i2c_read(client, auc_i2c_write_buf, 1, reg_val, 2);
 		FTS_DEBUG("[UPGRADE]: reg_val[0]=%02x reg_val[0]=%02x!!",
 					reg_val[0], reg_val[1]);
-		if ((reg_val[0] == 0xF0) && (reg_val[1] == 0x55))
+		if ((0xF0 == reg_val[0]) && (0x55 == reg_val[1]))
 			break;
 		usleep_range(1000, 2000);
 	}

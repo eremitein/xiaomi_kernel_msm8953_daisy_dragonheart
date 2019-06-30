@@ -164,8 +164,7 @@ int fts_ctpm_pramboot_ecc(struct i2c_client *client)
 	FTS_FUNC_ENTER();
 
 	/* read out checksum,
-	 * if pramboot checksum != host checksum, upgrade fail
-	 */
+	 * if pramboot checksum != host checksum, upgrade fail*/
 	FTS_INFO("[UPGRADE]******read out pramboot checksum******");
 	auc_i2c_write_buf[0] = 0xcc;
 	usleep_range(2000, 4000);
@@ -300,8 +299,7 @@ int fts_ctpm_erase_flash(struct i2c_client *client)
 
 	for (i = 0; i < 15; i++) {
 		/* get the erase app status,
-		 * if get 0xF0AA£¬erase flash success
-		 */
+		 * if get 0xF0AA£¬erase flash success*/
 		auc_i2c_write_buf[0] = 0x6a;
 		reg_val[0] = reg_val[1] = 0x00;
 		fts_i2c_read(client, auc_i2c_write_buf, 1, reg_val, 2);
@@ -423,8 +421,7 @@ int fts_ctpm_write_app_for_idc(struct i2c_client *client,
 
 		for (i = 0; i < 30; i++) {
 			/* read status and check
-			 * if the app writing is finished
-			 */
+			 * if the app writing is finished */
 			auc_i2c_write_buf[0] = 0x6a;
 			reg_val[0] = reg_val[1] = 0x00;
 			fts_i2c_read(client, auc_i2c_write_buf, 1, reg_val, 2);
