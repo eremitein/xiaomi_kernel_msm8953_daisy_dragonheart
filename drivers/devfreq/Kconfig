@@ -119,6 +119,12 @@ config ADRENO_REAL_IDLER
 		The higher frequencies are not touched, so high-demanding games
 		will (most likely) not suffer from worsened performance.
 
+config SIMPLE_GPU_ALGORITHM
+	bool "Simple GPU algorithm"
+	depends on DEVFREQ_GOV_MSM_ADRENO_TZ
+	help
+	  Simple user configurable GPU controlling algorithm
+
 config MSM_BIMC_BWMON
 	tristate "MSM BIMC Bandwidth monitor hardware"
 	depends on ARCH_MSM

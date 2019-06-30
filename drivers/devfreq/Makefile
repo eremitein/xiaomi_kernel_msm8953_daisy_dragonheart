@@ -4,6 +4,7 @@ obj-$(CONFIG_PM_DEVFREQ)	+= devfreq.o
 obj-$(CONFIG_PM_DEVFREQ)       += devfreq_trace.o
 obj-$(CONFIG_ADRENO_REAL_IDLER)		+= adreno_idler.o
 adreno_idler-objs	:= adreno_real_idler.o
+obj-$(CONFIG_SIMPLE_GPU_ALGORITHM)	+= simple_gpu_algorithm.o
 obj-$(CONFIG_DEVFREQ_GOV_PERFORMANCE)	+= governor_performance.o
 obj-$(CONFIG_DEVFREQ_GOV_MSM_ADRENO_PLUS)	+= governor_msm_adreno_plus.o
 obj-$(CONFIG_DEVFREQ_GOV_MSM_ADRENO_TZ)	+= governor_msm_adreno_tz.o
