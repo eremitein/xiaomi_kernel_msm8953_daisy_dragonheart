@@ -897,6 +897,13 @@ config REGULATOR_CPRH_KBSS
 	  independent voltage supplies. This driver reads both initial voltage
 	  and CPR target quotient values out of hardware fuses.
 
+config VOLTAGE_CONTROL
+	bool "Enable CPU voltage control"
+	depends on REGULATOR_CPR3
+	default n
+	help
+	  Enable CPU voltage control for MSM8953.
+
 config REGULATOR_KRYO
 	bool "Kryo regulator driver"
 	depends on OF
