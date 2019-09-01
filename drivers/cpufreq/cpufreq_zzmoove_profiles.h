@@ -519,7 +519,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		0,		// scaling_block_freq
 		0,		// scaling_block_threshold
 		2,		// scaling_block_force_down
-		1958400,	// scaling_fastdown_freq
+		1804800,	// scaling_fastdown_freq
 		95,		// scaling_fastdown_up_threshold
 		90,		// scaling_fastdown_down_threshold
 		652800,		// scaling_responsiveness_freq
@@ -694,7 +694,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		0,		// scaling_block_freq
 		0,		// scaling_block_threshold
 		2,		// scaling_block_force_down
-		1958400,	// scaling_fastdown_freq
+		1804800,	// scaling_fastdown_freq
 		95,		// scaling_fastdown_up_threshold
 		90,		// scaling_fastdown_down_threshold
 		652800,		// scaling_responsiveness_freq
@@ -869,7 +869,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		0,		// scaling_block_freq
 		0,		// scaling_block_threshold
 		2,		// scaling_block_force_down
-		1958400,	// scaling_fastdown_freq
+		1804800,	// scaling_fastdown_freq
 		95,		// scaling_fastdown_up_threshold
 		90,		// scaling_fastdown_down_threshold
 		652800,		// scaling_responsiveness_freq
@@ -1044,7 +1044,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		0,		// scaling_block_freq
 		0,		// scaling_block_threshold
 		2,		// scaling_block_force_down
-		1958400,	// scaling_fastdown_freq
+		1804800,	// scaling_fastdown_freq
 		95,		// scaling_fastdown_up_threshold
 		90,		// scaling_fastdown_down_threshold
 		652800,		// scaling_responsiveness_freq
@@ -1395,7 +1395,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		0,		// scaling_block_freq
 		0,		// scaling_block_threshold
 		2,		// scaling_block_force_down
-		1958400,	// scaling_fastdown_freq
+		1804800,	// scaling_fastdown_freq
 		95,		// scaling_fastdown_up_threshold
 		90,		// scaling_fastdown_down_threshold
 		652800,		// scaling_responsiveness_freq
@@ -1966,7 +1966,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		652800,		// up_threshold_hotplug_freq1
 #if (MAX_CORES == 4 || MAX_CORES == 6 || MAX_CORES == 8)
 		1267200,	// up_threshold_hotplug_freq2
-		1958400,	// up_threshold_hotplug_freq3
+		1804800,	// up_threshold_hotplug_freq3
 #endif /* (MAX_CORES == 4 || MAX_CORES == 6 || MAX_CORES == 8) */
 #if (MAX_CORES == 6 || MAX_CORES == 8)
 		0,		// up_threshold_hotplug_freq4
@@ -2097,7 +2097,7 @@ struct zzmoove_profile zzmoove_profiles[] = {
 		0,		// scaling_block_freq
 		0,		// scaling_block_threshold
 		2,		// scaling_block_force_down
-		1958400,	// scaling_fastdown_freq
+		1804800,	// scaling_fastdown_freq
 		95,		// scaling_fastdown_up_threshold
 		90,		// scaling_fastdown_down_threshold
 		652800,		// scaling_responsiveness_freq

@@ -12,6 +12,8 @@
  * optimize more, generalize for n cores, Sep. 2013, http://goo.gl/448qBz
  * generalize for all arch, rename as autosmp, Dec. 2013, http://goo.gl/x5oyhy
  *
+ * 2019 Mod for 'dragonheart@daisy' by Victor Bo <eremitein@xda/zerovoid@4pda>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -26,18 +28,7 @@
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
 #include <linux/hrtimer.h>
-
-#if defined(CONFIG_ASMP_SUSPEND)
-
-#ifdef CONFIG_POWERSUSPEND
-#include <linux/powersuspend.h>
-#endif
-
-#ifdef CONFIG_HAS_EARLYSUSPEND
-#include <linux/earlysuspend.h>
-#endif
-
-#endif /* defined(CONFIG_ASMP_SUSPEND) */
+#include <linux/display_state.h>
 
 #define HOTPLUG_ENABLED 0
 #define DEBUG 0
@@ -62,14 +53,14 @@ static struct asmp_param_struct {
 	unsigned int cycle_up;
 	unsigned int cycle_down;
 } asmp_param = {
-	.delay = 100,
+	.delay = 500,
 	.scroff_single_core = true,
 	.max_cpus = 8,
 	.min_cpus = 4,
-	.cpufreq_up = 90,
+	.cpufreq_up = 95,
 	.cpufreq_down = 35,
-	.cycle_up = 4,
-	.cycle_down = 3,
+	.cycle_up = 5,
+	.cycle_down = 5,
 };
 
 static unsigned int cycle = 0, delay0 = 0;
@@ -81,6 +72,9 @@ static void __cpuinit asmp_work_fn(struct work_struct *work) {
 	unsigned int rate, cpu0_rate, slow_rate = UINT_MAX, fast_rate;
 	unsigned int max_rate, up_rate, down_rate;
 	int nr_cpu_online;
+
+	/* create display state boolean */
+	bool display_on = is_display_on();
 
 	cycle++;
 
@@ -116,7 +110,7 @@ static void __cpuinit asmp_work_fn(struct work_struct *work) {
 	/* hotplug one core if all online cores are over up_rate limit */
 	if (slow_rate > up_rate) {
 		if ((nr_cpu_online < asmp_param.max_cpus) &&
-		    (cycle >= asmp_param.cycle_up)) {
+				(cycle >= asmp_param.cycle_up)) {
 			cpu = cpumask_next_zero(0, cpu_online_mask);
 			cpu_up(cpu);
 			cycle = 0;
@@ -126,84 +120,31 @@ static void __cpuinit asmp_work_fn(struct work_struct *work) {
 		}
 	/* unplug slowest core if all online cores are under down_rate limit */
 	} else if (slow_cpu && (fast_rate < down_rate)) {
-		if ((nr_cpu_online > asmp_param.min_cpus) &&
-		    (cycle >= asmp_param.cycle_down)) {
- 			cpu_down(slow_cpu);
-			cycle = 0;
+		if (!display_on) {
+			/* unplug online cpu cores */
+			if (asmp_param.scroff_single_core)
+				for_each_present_cpu(cpu)
+					if (cpu && cpu_online(cpu))
+						cpu_down(cpu);
+						cycle = 0;
 #if DEBUG
-			pr_info(ASMP_TAG"CPU[%d] off\n", slow_cpu);
-			per_cpu(asmp_cpudata, cpu).times_hotplugged += 1;
+				pr_info(ASMP_TAG"suspended\n");
 #endif
-		}
+		} else {
+			if ((nr_cpu_online > asmp_param.min_cpus) &&
+					(cycle >= asmp_param.cycle_down)) {
+				cpu_down(slow_cpu);
+				cycle = 0;
+#if DEBUG
+				pr_info(ASMP_TAG"CPU[%d] off\n", slow_cpu);
+				per_cpu(asmp_cpudata, cpu).times_hotplugged += 1;
+#endif
+				}
+			}
 	} /* else do nothing */
 
 	queue_delayed_work(asmp_workq, &asmp_work, delay_jif);
 }
-
-#if defined(CONFIG_ASMP_SUSPEND)
-
-#ifdef CONFIG_POWERSUSPEND
-static void asmp_early_suspend(struct power_suspend *handler)
-#else
-static void asmp_early_suspend(struct early_suspend *h) 
-#endif
-{
-	unsigned int cpu;
-
-	/* unplug online cpu cores */
-	if (asmp_param.scroff_single_core)
-		for_each_present_cpu(cpu)
-			if (cpu && cpu_online(cpu))
-				cpu_down(cpu);
-
-	/* suspend main work thread */
-	if (enabled)
-		cancel_delayed_work_sync(&asmp_work);
-
-	pr_info(ASMP_TAG"suspended\n");
-}
-
-#ifdef CONFIG_POWERSUSPEND
-static void __ref asmp_late_resume(struct power_suspend *handler)
-#else
-static void __ref asmp_late_resume(struct early_suspend *h)
-#endif
-{
-	unsigned int cpu;
-
-	/* hotplug offline cpu cores */
-	if (asmp_param.scroff_single_core)
-		for_each_present_cpu(cpu) {
-			if (num_online_cpus() >= asmp_param.max_cpus)
-				break;
-			if (!cpu_online(cpu))
-				cpu_up(cpu);
-		}
-	/* resume main work thread */
-	if (enabled)
-		queue_delayed_work(asmp_workq, &asmp_work,
-				msecs_to_jiffies(asmp_param.delay));
-
-	pr_info(ASMP_TAG"resumed\n");
-}
-
-#ifdef CONFIG_POWERSUSPEND
-static struct power_suspend asmp_power_suspend_handler = {
-	.suspend = asmp_early_suspend,
-	.resume = asmp_late_resume,
-};
-#endif  /* CONFIG_POWERSUSPEND */
-
-#ifdef CONFIG_HAS_EARLYSUSPEND
-static struct early_suspend __refdata asmp_early_suspend_handler = {
-	.level = EARLY_SUSPEND_LEVEL_BLANK_SCREEN,
-	.suspend = asmp_early_suspend,
-	.resume = asmp_late_resume,
-};
-#endif	/* CONFIG_HAS_EARLYSUSPEND */
-
-#endif /* defined(CONFIG_ASMP_SUSPEND) */
-
 
 static int __cpuinit set_enabled(const char *val, const struct kernel_param *kp) {
 	int ret;
@@ -340,17 +281,6 @@ static int __init asmp_init(void) {
 	if (enabled)
 		queue_delayed_work(asmp_workq, &asmp_work,
 				   msecs_to_jiffies(ASMP_STARTDELAY));
-
-#if defined(CONFIG_ASMP_SUSPEND)
-
-#ifdef CONFIG_POWERSUSPEND
-	register_power_suspend(&asmp_power_suspend_handler);
-#endif
-#ifdef CONFIG_HAS_EARLYSUSPEND
-	register_early_suspend(&asmp_early_suspend_handler);
-#endif
-
-#endif /* defined(CONFIG_ASMP_SUSPEND) */
 
 	asmp_kobject = kobject_create_and_add("autosmp", kernel_kobj);
 	if (asmp_kobject) {

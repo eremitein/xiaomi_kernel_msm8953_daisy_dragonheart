@@ -410,7 +410,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	 */
 	if (val) {
 		level += val;
-		level = max(level, 4);
+		level = max(level, 6);
 		level = min_t(int, level, devfreq->profile->max_state - 1);
 	}
 
